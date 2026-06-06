@@ -21,8 +21,20 @@ DB_NAME = 'hadiths.db'
 FONT_AR = 'fonts/Amiri-Regular.ttf'
 FONT_AR_BOLD = 'fonts/Amiri-Bold.ttf'
 
+# Otomatik Veritabanı Kurulumu (Eğer veritabanı mevcut değilse veya boşsa)
+if not os.path.exists(DB_NAME) or os.path.getsize(DB_NAME) == 0:
+    st.warning("🕌 Veritabanı dosyası bulunamadı. JSON kaynaklarından veritabanı oluşturuluyor, lütfen bekleyin...")
+    with st.spinner("Hadis veritabanı kuruluyor (yaklaşık 10-15 saniye sürer)..."):
+        try:
+            import hadith_preprocessor
+            hadith_preprocessor.process_and_populate()
+            st.success("Veritabanı başarıyla oluşturuldu! Sayfa yükleniyor...")
+        except Exception as e:
+            st.error(f"Veritabanı oluşturulurken hata meydana geldi: {e}")
+
 def get_connection():
     return sqlite3.connect(DB_NAME)
+
 
 def normalize_arabic(text):
     if not text:
